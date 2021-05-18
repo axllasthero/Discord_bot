@@ -10,13 +10,13 @@ intents.members = True
 
 
 bot = commands.Bot(command_prefix="!", intents = intents)
-
-channel = 825309119589122088
+vchannel = 844014382555725855
+channel = 844014095631253517
 @bot.command(name="hello")
 async def command_hello(ctx):
     global channel
     if ctx.channel.id == channel:
-        msg = f'helo, F*ck marriot'
+        msg = f'hello'
         await ctx.channel.send(msg)
 
 @bot.command(name="repeat")
@@ -74,11 +74,91 @@ async def mk(ctx, f1:discord.Member=None, f2:discord.Member=bot.user):
 
     global channel
     if ctx.channel.id == channel:
-        print(f1.avatar_url, f2.avatar_url)
-        await imhl.vs_create(f1.avatar_url, f2.avatar_url)
+        if f1 and f2:
 
-        await ctx.channel.send(file = discord.File(os.path.join("./img/result.png")))
+            await imhl.vs_create(f1.avatar_url, f2.avatar_url)
+
+            await ctx.channel.send(file = discord.File(os.path.join("./img/result.png")))
+@bot.command(name="mka")
+async def mka(ctx, f1:discord.Member=None, f2:discord.Member=bot.user):
+
+    global channel
+    if ctx.channel.id == channel:
+        if f1 and f2:
+
+            await imhl.vs_create_animated(f1.avatar_url, f2.avatar_url)
+
+            await ctx.channel.send(file = discord.File(os.path.join("./img/result.gif")))
+@bot.command(name = "fight")
+async def command_fight(ctx):
+    msg = ""
+    global channel
+
+    if ctx.channel.id == channel:
 
 
+
+        
+
+        if len(ctx.author.voice.channel.members) == 2:
+
+            f1 = ctx.author.voice.channel.members[0]
+            f2 = ctx.author.voice.channel.members[1]
+            voice_channel = ctx.author.voice.channel
+
+            msg = f'{f1.name} {f"-{f1.nick}" if f1.nick else ""} vs {f2.name} {f"({f2.nick})" if f2.nick else ""}'
+
+            await voice_channel.connect()
+            await imhl.vs_create_animated(f1.avatar_url, f2.avatar_url)
+            await ctx.channel.send(msg)
+            await ctx.channel.send(file=discord.File(os.path.join("./img/result.gif")))
+            voice_client = discord.utils.get(bot.voice_clients, guild=ctx.guild)
+            await voice_client.play(discord.FFmpegPCMAudio(executable="./sound/ffmpeg.exe", source="./sound/mk.mp3"))
+        if len(ctx.author.voice.channel.members) == 1:
+
+            f1 = ctx.author.voice.channel.members[0]
+            f2 = bot.user
+            voice_channel = ctx.author.voice.channel
+
+            msg = f'{f1.name} {f"- {f1.nick}" if f1.nick else ""} vs {f2.name}'
+            await voice_channel.connect()
+            await imhl.vs_create_animated(f1.avatar_url, f2.avatar_url)
+            await ctx.channel.send(msg)
+            await ctx.channel.send(file=discord.File(os.path.join("./img/result.gif")))
+            voice_client = discord.utils.get(bot.voice_clients, guild=ctx.guild)
+            await voice_client.play(discord.FFmpegPCMAudio(executable="C:/Users/MaxCoolHero/ffmpeg.exe", source="./sound/mk.mp3"))
+
+        
+@bot.command(name="join")
+async def vc_join(ctx):
+    msg = ""
+    global channel
+    if ctx.channel.id == channel:
+        voice_channel = ctx.author.voice.channel
+        if voice_channel:
+            msg=f'Подключаюсь к {voice_channel.name}'
+            await ctx.channel.send(  msg  )
+            await voice_channel.connect()
+
+@bot.command(name="leave")
+async def vc_leave(ctx):
+    msg = ""
+    global channel
+    if ctx.channel.id == channel:
+        voice_channel = ctx.author.voice.channel
+        if voice_channel:
+            msg=f'Отключаюсь от {voice_channel.name}'
+            await ctx.channel.send(  msg  )
+            await ctx.voice_client.disconnect()
+
+@bot.command(name="ost")
+async def vc_ost(ctx):
+    msg = ""
+    global channel
+    if ctx.channel.id == channel:
+        voice_client = discord.utils.get(bot.voice_clients, guild=ctx.guild)
+        msg = f'Mortal combat'
+        await ctx.channel.send(msg)
+        await voice_client.play(    discord.FFmpegPCMAudio( executable="./sound/ffmpeg.exe", source="./sound/mk.mp3")    )
 
 bot.run(conf.bot_token)
